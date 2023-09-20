@@ -69,7 +69,7 @@ echo " -------------------------------------------------------------------------
 pacman -S grub efibootmgr dosfstools os-prober mtools 
 mkdir /boot/EFI 
 lsblk 
-read -p "Mount efi partition " partycja
+read -p "Enter the name of EFI partition to mount boot options properly " partycja
 mount /dev/$partycja /boot/EFI 
 
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck 
