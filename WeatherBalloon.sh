@@ -84,10 +84,12 @@ echo "    / /_//| \__ \ (__  / ___/ (_| | |  | |_| | |_| | (_) | | | \__ \  / /_
 echo "   /___,' |_|___/\___| \/    \__,_|_|   \__|_|\__|_|\___/|_| |_|___/ /___,' \___/|_| |_|\___| \/    "
 echo " --------------------------------------------------------------------------------------------------------------- "
 
+
 pacstrap -i /mnt base 
-mkdir /mnt/archinstall/Balloon
+mkdir /mnt/Balloon
 cp WeatherBalloon2.sh /mnt/Balloon/
 arch-chroot /mnt ./Balloon/WeatherBalloon2.sh
+
 
 
 
