@@ -85,6 +85,7 @@ echo "   /___,' |_|___/\___| \/    \__,_|_|   \__|_|\__|_|\___/|_| |_|___/ /___,
 echo " --------------------------------------------------------------------------------------------------------------- "
 
 pacstrap -i /mnt base 
+cp WeatherBalloon2.sh /mnt/Balloon/
 arch-chroot /mnt ./Balloon/WeatherBalloon2.sh
 
 
