@@ -8,13 +8,12 @@ echo "                                                                          
 echo " --------------------------------------------------------------------------------------------------------------- "
 echo "                      playfulCloud's  Weather Balloon - Arch Linux Install script part2                    "
 echo " --------------------------------------------------------------------------------------------------------------- "
-pacman -S linux-lts linux-lts-headers 
-pacman -S base-devel openssh
+pacman -S linux-lts linux-lts-headers base-devel openssh networkmanager wpa_supplicant wireless_tools netctl dialog vim lvm2 
+
+
 systemctl enable sshd
-pacman -S networkmanager wpa_supplicant wireless_tools netctl
-pacman -S dialog
 systemctl enable NetworkManager
-pacman -S lvm2
+
 
 echo "Add LVM suppor - > HOOKS(block "there - lvm2" filesystems) "
 read -p "Open it now?" c
