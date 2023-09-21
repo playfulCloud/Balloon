@@ -56,24 +56,26 @@ echo " -------------------------------------------------------------------------
 lsblk
 read -p "Enter the name of the EFI partition: " sda1
 read -p "Enter the name of the LVM partition: " sda2
-mkfs.fat -F32 /dev/$sda1 #okej 
-pvcreate --dataalignment 1m /dev/$sda2 #okej 
-vgcreate volgroup0 /dev/$sda2 #okej 
 
-lvcreate -L 30GB volgroup0 -n lv_root 
-lvcreate -l 100%FREE volgroup0 -n lv_home
+mkfs.fat -F 32 /dev/$sda1;
+mkfs.btrfs -f /dev/$sda2
 
-modprobe dm_mod 
-vgscan 
-vgchange -ay
+mount /dev/$sda2 /mnt
+btrfs su cr /mnt/@
+btrfs su cr /mnt/@cache
+btrfs su cr /mnt/@home
+btrfs su cr /mnt/@snapshots
+btrfs su cr /mnt/@log
+umount /mnt
 
-mkfs.ext4 /dev/volgroup0/lv_root
-mount /dev/volgroup0/lv_root /mnt 
+mount -o compress=zstd:1,noatime,subvol=@ /dev/$sda2 /mnt
+mkdir -p /mnt/{boot/efi,home,.snapshots,var/{cache,log}}
+mount -o compress=zstd:1,noatime,subvol=@cache /dev/$sda2 /mnt/var/cache
+mount -o compress=zstd:1,noatime,subvol=@home /dev/$sda2 /mnt/home
+mount -o compress=zstd:1,noatime,subvol=@log /dev/$sda2 /mnt/var/log
+mount -o compress=zstd:1,noatime,subvol=@snapshots /dev/$sda2 /mnt/.snapshots
+mount /dev/$sda1 /mnt/boot/efi
 
-mkfs.ext4 /dev/volgroup0/lv_home
-mkdir /mnt/home
-mount /dev/volgroup0/lv_home /mnt/home
-mkdir /mnt/etc
 
 genfstab -U -p /mnt >> /mnt/etc/fstab
 cat /mnt/etc/fstab
