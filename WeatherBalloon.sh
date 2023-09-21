@@ -68,16 +68,15 @@ lsblk
 read -p "Enter the name of the EFI partition: " sda1
 read -p "Enter the name of the Linux File System partition: " sda2
 
-mkfs.ext4 /dev/$sda1
+mkfs.fat -F32 /dev/$sda1
 mkfs.ext4 /dev/$sda2
 
 mount /dev/$sda2 /mnt 
 mkdir /mnt/boot 
+mkdir /mnt/boot/efi 
 mount /dev/$sda1 /mnt/boot
 
-pacstrap /mnt base base-devel linux linux-firmware vim
-
-
+pacstrap /mnt base base-devel linux linux-firmware vim vifm
 
 genfstab -U /mnt >> /mnt/etc/fstab
 echo " --------------------------------------------------------------------------------------------------------------- "

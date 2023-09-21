@@ -10,14 +10,7 @@ echo "                      playfulCloud's  Weather Balloon - Arch Linux Install
 echo " --------------------------------------------------------------------------------------------------------------- "
 
 
-pacman -S networkmanager grub
 
-systemctl enable NetworkManager 
-
-lsblk
-read -p "You disc name for grub installation" drive
-grub-install /dev/$drive
-grub-mkconfig -o /boot/grub/grub.cfg
 
 
 
@@ -27,9 +20,16 @@ passwd
 echo "  Adding playfulCloud as a new user:  "
 useradd -m -G wheel playfulCloud
 echo " Set the playfulClouds password: "
-passwd
+passwd playfulCloud
 
-
+clear
+echo "Uncomment %wheel group in sudoers (around line 85):"
+echo "Before: #%wheel ALL=(ALL:ALL) ALL"
+echo "After:  %wheel ALL=(ALL:ALL) ALL"
+echo ""
+read -p "Open sudoers now?" c
+EDITOR=vim sudo -E visudo
+usermod -aG wheel $username
 
 echo "pl_PL.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
@@ -44,12 +44,18 @@ echo "127.0.1.1 $hostname.localdomain $hostname" >> /etc/hosts
 
 ln -sf /usr/share/zoneinfo/Europe/Warsaw /etc/localtime
 
-pacman -S neofetch 
+mkinitcpio -P
 
-echo "Installation Done!"
+pacman -S networkmanager grub efibootmgr
+systemctl enable NetworkManager 
+grub-install --target=x86_64-efi --efi--directory=/boot/efi
+grub-mkconfig -o /boot/grub/grub.cfg
+
+pacman -S openssh
+systemctl enable sshd
+
 exit
 umount -R /mnt 
-neofetch
 
 
 
