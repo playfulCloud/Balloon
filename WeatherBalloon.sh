@@ -37,45 +37,49 @@ echo "              / /__| |_| | | | | | | |_| | | (_) / /\  /| | | | | | | |_) 
 echo "              \____/\__,_|_| |_| |_|\__,_|_|\___/\_\ \/ |_|_| |_| |_|_.__/ \__,_|___/ "
 echo " --------------------------------------------------------------------------------------------------------------- "                                                                       
    echo "   Now we will set up internet connection: "
+
    iwctl
    device list
+
    read -p "   Enter the interface name you want to connect: " interface
-    station $interface scan
-    station $interface get-networks
+
+   station $interface scan
+   station $interface get-networks
+
    read -p "   Enter the wireless network name you want to connect: " network
-    station $interface connect $network
+
+   station $interface connect $network
+
    echo "   CTRL + D -> to exit iwctl prompt"
    echo " --------------------------------------------------------------------------------------------------------------- "
    echo "   Check if the ip adress is aquired"
-    ip addr show
+
+   ip addr show
+
    echo "   If ping went well your network is set"
-    ping -c 2 8.8.8.8
-    pacman -S mesa
+
+   ping -c 2 8.8.8.8
+   pacman -S mesa
 fi
 echo " --------------------------------------------------------------------------------------------------------------- "
+
 lsblk
+
 read -p "Enter the name of the EFI partition: " sda1
-read -p "Enter the name of the LVM partition: " sda2
-mkfs.fat -F32 /dev/$sda1 #okej 
-pvcreate --dataalignment 1m /dev/$sda2 #okej 
-vgcreate volgroup0 /dev/$sda2 #okej 
+read -p "Enter the name of the Linux File System partition: " sda2
 
-lvcreate -L 30GB volgroup0 -n lv_root 
-lvcreate -l 100%FREE volgroup0 -n lv_home
+mkfs.ext4 /dev/$sda1
+mkfs.ext4 /dev/$sda2
 
-modprobe dm_mod 
-vgscan 
-vgchange -ay
+mount /dev/$sda2 /mnt 
+mkdir /mnt/boot 
+mount /dev/$sda1 /mnt/boot
 
-mkfs.ext4 /dev/volgroup0/lv_root
-mount /dev/volgroup0/lv_root /mnt 
+pacstrap /mnt base base-devel linux linux-firmware vim
 
-mkfs.ext4 /dev/volgroup0/lv_home
-mkdir /mnt/home
-mount /dev/volgroup0/lv_home /mnt/home
-mkdir /mnt/etc
 
-genfstab -U -p /mnt >> /mnt/etc/fstab
+
+genfstab -U /mnt >> /mnt/etc/fstab
 echo " --------------------------------------------------------------------------------------------------------------- "
 echo "       ___ _              ___           _   _ _   _                      ___                     _  "
 echo "      /   (_)___  ___    / _ \__ _ _ __| |_(_) |_(_) ___  _ __  ___     /   \___  _ __   ___    / \ "
@@ -84,7 +88,7 @@ echo "    / /_//| \__ \ (__  / ___/ (_| | |  | |_| | |_| | (_) | | | \__ \  / /_
 echo "   /___,' |_|___/\___| \/    \__,_|_|   \__|_|\__|_|\___/|_| |_|___/ /___,' \___/|_| |_|\___| \/    "
 echo " --------------------------------------------------------------------------------------------------------------- "
 
-pacstrap -i /mnt base 
+
 mkdir /mnt/Balloon
 cp WeatherBalloon2.sh /mnt/Balloon/
 arch-chroot /mnt ./Balloon/WeatherBalloon2.sh
