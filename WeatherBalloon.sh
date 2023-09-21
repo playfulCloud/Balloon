@@ -24,8 +24,7 @@ if [ $type -eq 1 ] ; then
    echo "                 /\ \ (_)_ __ ___ | |__   ___ / _\ |_ _ __ __ _| |_ _   _ ___  "
    echo "                /  \/ / |  _   _ \|  _ \ / _  \ \| __|  __/ _ | __| |  | / __| "
    echo "               / /\  /| | | | | | | |_) | (_) |\ \ |_| | | (_| | |_| |_| \__ \ "
-   echo "               \_\ \/ |_|_| |_| |_|_.__/ \___/\__/\__|_|  \__,_|\__|\__,_|___/ "
-   #echo " --------------------------------------------------------------------------------------------------------------- "                                                              
+   echo "               \_\ \/ |_|_| |_| |_|_.__/ \___/\__/\__|_|  \__,_|\__|\__,_|___/ "                                                           
    ip addr show
 else 
    computerName = "CumuloNimbus"
@@ -53,12 +52,14 @@ echo " -------------------------------------------------------------------------
     pacman -S mesa
 fi
 echo " --------------------------------------------------------------------------------------------------------------- "
+
 lsblk
-read -p "Enter the name of the EFI partition: " sda1
-read -p "Enter the name of the LVM partition: " sda2
+read -p "Enter the name of the EFI partition (eg. sda1): " sda1
+read -p "Enter the name of the ROOT partition (eg. sda2): " sda2
 
 mkfs.fat -F 32 /dev/$sda1;
 mkfs.btrfs -f /dev/$sda2
+
 
 mount /dev/$sda2 /mnt
 btrfs su cr /mnt/@
@@ -77,18 +78,12 @@ mount -o compress=zstd:1,noatime,subvol=@snapshots /dev/$sda2 /mnt/.snapshots
 mount /dev/$sda1 /mnt/boot/efi
 
 
-genfstab -U -p /mnt >> /mnt/etc/fstab
+pacstrap -K /mnt base base-devel git linux linux-firmware vim openssh rsync intel-ucode
+
+genfstab -U /mnt >> /mnt/etc/fstab
 cat /mnt/etc/fstab
-echo " --------------------------------------------------------------------------------------------------------------- "
-echo "       ___ _              ___           _   _ _   _                      ___                     _  "
-echo "      /   (_)___  ___    / _ \__ _ _ __| |_(_) |_(_) ___  _ __  ___     /   \___  _ __   ___    / \ "
-echo "     / /\ / / __|/ __|  / /_)/ _  |  __| __| | __| |/ _ \|  _ \/ __|   / /\ / _ \|  _ \ / _ \  /  / "
-echo "    / /_//| \__ \ (__  / ___/ (_| | |  | |_| | |_| | (_) | | | \__ \  / /_// (_) | | | |  __/ /\_/  "
-echo "   /___,' |_|___/\___| \/    \__,_|_|   \__|_|\__|_|\___/|_| |_|___/ /___,' \___/|_| |_|\___| \/    "
-echo " --------------------------------------------------------------------------------------------------------------- "
 
 
-pacstrap -i /mnt base 
 mkdir /mnt/Balloon
 cp WeatherBalloon2.sh /mnt/Balloon/
 arch-chroot /mnt ./Balloon/WeatherBalloon2.sh
