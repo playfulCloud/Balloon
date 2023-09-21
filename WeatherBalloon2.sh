@@ -10,15 +10,12 @@ echo "                      playfulCloud's  Weather Balloon - Arch Linux Install
 echo " --------------------------------------------------------------------------------------------------------------- "
 
 
-
-
-
-
 echo "Set new Passwrod for Root User: "
 passwd
 
-echo "  Adding playfulCloud as a new user:  "
+echo "Adding playfulCloud as a new user:  "
 useradd -m -G wheel playfulCloud
+
 echo " Set the playfulClouds password: "
 passwd playfulCloud
 
@@ -31,6 +28,7 @@ read -p "Open sudoers now?" c
 EDITOR=vim sudo -E visudo
 usermod -aG wheel $username
 
+
 echo "pl_PL.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" >> /etc/locale.conf
@@ -42,8 +40,9 @@ echo "127.0.0.1 localhost" >> /etc/hosts
 echo "::1       localhost" >> /etc/hosts
 echo "127.0.1.1 $hostname.localdomain $hostname" >> /etc/hosts
 
-ln -sf /usr/share/zoneinfo/Europe/Warsaw /etc/localtime
 
+
+ln -sf /usr/share/zoneinfo/Europe/Warsaw /etc/localtime
 mkinitcpio -P
 
 pacman -S networkmanager grub efibootmgr
@@ -54,8 +53,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 pacman -S openssh
 systemctl enable sshd
 
-exit
-umount -R /mnt 
+
 
 
 
