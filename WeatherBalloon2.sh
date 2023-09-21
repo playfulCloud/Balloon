@@ -67,13 +67,15 @@ echo "                                                   |___/                  
 echo " --------------------------------------------------------------------------------------------------------------- "
 
 pacman -S grub efibootmgr dosfstools os-prober mtools 
-mkdir /boot/EFI 
-lsblk 
-read -p "Enter the name of EFI partition to mount boot options properly " partycja
-mount /dev/$partycja /boot/EFI 
+# mkdir /boot/EFI 
+# lsblk 
+# read -p "Enter the name of EFI partition to mount boot options properly: " partycja
+# mount /dev/$partycja /boot/EFI 
 
-grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck 
-cp /usr/share/locale/en\@quot/LS_MESSAGES/grub.mo /boot/grub/locale/en.mo
+# grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck 
+# cp /usr/share/locale/en\@quot/LS_MESSAGES/grub.mo /boot/grub/locale/en.mo
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --removable
+grub-mkconfig -o /boot/grub/grub.cfg
 
 echo " --------------------------------------------------------------------------------------------------------------- "
 echo "   ___            _                        __ _                       _   _                   _                    _ "
