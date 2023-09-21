@@ -24,7 +24,8 @@ if [ $type -eq 1 ] ; then
    echo "                 /\ \ (_)_ __ ___ | |__   ___ / _\ |_ _ __ __ _| |_ _   _ ___  "
    echo "                /  \/ / |  _   _ \|  _ \ / _  \ \| __|  __/ _ | __| |  | / __| "
    echo "               / /\  /| | | | | | | |_) | (_) |\ \ |_| | | (_| | |_| |_| \__ \ "
-   echo "               \_\ \/ |_|_| |_| |_|_.__/ \___/\__/\__|_|  \__,_|\__|\__,_|___/ "                                                           
+   echo "               \_\ \/ |_|_| |_| |_|_.__/ \___/\__/\__|_|  \__,_|\__|\__,_|___/ "
+   #echo " --------------------------------------------------------------------------------------------------------------- "                                                              
    ip addr show
 else 
    computerName = "CumuloNimbus"
@@ -52,42 +53,41 @@ echo " -------------------------------------------------------------------------
     pacman -S mesa
 fi
 echo " --------------------------------------------------------------------------------------------------------------- "
-
 lsblk
-read -p "Enter the name of the EFI partition (eg. sda1): " sda1
-read -p "Enter the name of the ROOT partition (eg. sda2): " sda2
+read -p "Enter the name of the EFI partition: " sda1
+read -p "Enter the name of the LVM partition: " sda2
+mkfs.fat -F32 /dev/$sda1 #okej 
+pvcreate --dataalignment 1m /dev/$sda2 #okej 
+vgcreate volgroup0 /dev/$sda2 #okej 
 
-mkfs.fat -F 32 /dev/$sda1;
-mkfs.btrfs -f /dev/$sda2
+lvcreate -L 30GB volgroup0 -n lv_root 
+lvcreate -l 100%FREE volgroup0 -n lv_home
 
+modprobe dm_mod 
+vgscan 
+vgchange -ay
 
-mount /dev/$sda2 /mnt
-btrfs su cr /mnt/@
-btrfs su cr /mnt/@cache
-btrfs su cr /mnt/@home
-btrfs su cr /mnt/@snapshots
-btrfs su cr /mnt/@log
-umount /mnt
+mkfs.ext4 /dev/volgroup0/lv_root
+mount /dev/volgroup0/lv_root /mnt 
 
-mount -o compress=zstd:1,noatime,subvol=@ /dev/$sda2 /mnt
-mkdir -p /mnt/{boot/efi,home,.snapshots,var/{cache,log}}
-mount -o compress=zstd:1,noatime,subvol=@cache /dev/$sda2 /mnt/var/cache
-mount -o compress=zstd:1,noatime,subvol=@home /dev/$sda2 /mnt/home
-mount -o compress=zstd:1,noatime,subvol=@log /dev/$sda2 /mnt/var/log
-mount -o compress=zstd:1,noatime,subvol=@snapshots /dev/$sda2 /mnt/.snapshots
-mount /dev/$sda1 /mnt/boot/efi
+mkfs.ext4 /dev/volgroup0/lv_home
+mkdir /mnt/home
+mount /dev/volgroup0/lv_home /mnt/home
+mkdir /mnt/etc
 
+genfstab -U -p /mnt >> /mnt/etc/fstab
+echo " --------------------------------------------------------------------------------------------------------------- "
+echo "       ___ _              ___           _   _ _   _                      ___                     _  "
+echo "      /   (_)___  ___    / _ \__ _ _ __| |_(_) |_(_) ___  _ __  ___     /   \___  _ __   ___    / \ "
+echo "     / /\ / / __|/ __|  / /_)/ _  |  __| __| | __| |/ _ \|  _ \/ __|   / /\ / _ \|  _ \ / _ \  /  / "
+echo "    / /_//| \__ \ (__  / ___/ (_| | |  | |_| | |_| | (_) | | | \__ \  / /_// (_) | | | |  __/ /\_/  "
+echo "   /___,' |_|___/\___| \/    \__,_|_|   \__|_|\__|_|\___/|_| |_|___/ /___,' \___/|_| |_|\___| \/    "
+echo " --------------------------------------------------------------------------------------------------------------- "
 
-pacstrap -K /mnt base base-devel git linux linux-firmware vim openssh rsync intel-ucode
-
-genfstab -U /mnt >> /mnt/etc/fstab
-cat /mnt/etc/fstab
-
-
+pacstrap -i /mnt base 
 mkdir /mnt/Balloon
 cp WeatherBalloon2.sh /mnt/Balloon/
 arch-chroot /mnt ./Balloon/WeatherBalloon2.sh
-
 
 
 
