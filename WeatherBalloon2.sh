@@ -58,9 +58,16 @@ modprobe btusbw
 systemctl enable bluetooth
 systemctl start bluetooth
 
-pacman -S kitty thunar neofetch tar unrar htop p7zip
+pacman -S kitty thunar neofetch tar unrar htop p7zip git 
 
-neofetch
+git clone https://aur.archlinux.org/yay-bin.git
+cd yay-bin
+makepkg -si
+
+yay -S hyprland dolphin wofi hyprpaper
+clear 
+Hyprland
+
 
 
 
