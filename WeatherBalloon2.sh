@@ -47,7 +47,7 @@ mkinitcpio -P
 
 pacman -S networkmanager grub efibootmgr
 systemctl enable NetworkManager 
-grub-install --target=x86_64-efi --efi--directory=/boot/efi
+grub-install --target=x86_64-efi --efi--directory=/boot
 grub-mkconfig -o /boot/grub/grub.cfg
 
 pacman -S openssh
