@@ -53,6 +53,15 @@ grub-mkconfig -o /boot/grub/grub.cfg
 pacman -S openssh
 systemctl enable sshd
 
+pacman -S bluez blueman bluez-utils
+modprobe btusbw
+systemctl enable bluetooth
+systemctl start bluetooth
+
+pacman -S kitty thunar neofetch tar unrar htop p7zip
+
+neofetch
+
 
 
 
