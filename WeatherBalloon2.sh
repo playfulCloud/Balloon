@@ -1,4 +1,5 @@
 #!/bin/bash
+clear
 echo " __    __           _   _                   ___       _ _                       ___             __ _         ____  "
 echo "/ / /\ \ \___  __ _| |_| |__   ___ _ __    / __\ __ _| | | ___   ___  _ __     / __\___  _ __  / _(_) __ _  |___ \ "
 echo "\ \/  \/ / _ \/ _  | __| '_ \ / _ \ '__|  /__\/// _  | | |/ _ \ / _ \| '_ \   / /  / _ \| '_ \| |_| |/ _  |   __) | "
@@ -25,8 +26,10 @@ echo "Before: #%wheel ALL=(ALL:ALL) ALL"
 echo "After:  %wheel ALL=(ALL:ALL) ALL"
 echo ""
 read -p "Open sudoers now?" c
+
+
 EDITOR=vim sudo -E visudo
-usermod -aG wheel $username
+usermod -aG wheel playfulCloud
 
 
 echo "pl_PL.UTF-8 UTF-8" >> /etc/locale.gen
@@ -58,9 +61,11 @@ modprobe btusbw
 systemctl enable bluetooth
 systemctl start bluetooth
 
-pacman -S kitty thunar neofetch tar unrar htop p7zip
+pacman -S kitty thunar neofetch tar unrar htop p7zip git 
+cp /Balloon/WeatherBallon3.sh /home/playfulCloud
 
-neofetch
+
+
 
 
 
